@@ -7,17 +7,18 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Configuration["ConnectionStrings:DefaultConnection"] = builder.Configuration["ConnectionStrings:DefaultConnection"] ?? "server=127.0.0.1;user=root;password=;database=schoolsystemdb;";
+// Use the PostgreSQL connection from Render
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
 builder.Services.AddDbContext<SchoolContext>(options =>
-    options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"),
-        ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection")))
+    options.UseNpgsql(connectionString)
 );
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// JWT key
 var jwtKey = builder.Configuration["Jwt:Key"] ?? "THIS_IS_A_VERY_SECRET_KEY_CHANGE_ME";
 
 builder.Services.AddAuthentication(options =>
@@ -43,10 +44,11 @@ builder.Services.AddScoped<PaymentService>();
 
 var app = builder.Build();
 
+// Database auto-create + seed
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<SchoolContext>();
-    db.Database.EnsureCreated();
+    db.Database.Migrate();   // <-- PostgreSQL uses Migrate(), not EnsureCreated()
     SeedData.EnsureSeedData(db);
 }
 
