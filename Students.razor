@@ -1,0 +1,20 @@
+@page "/students"
+@using SchoolSystem.Server.Data
+@inject SchoolContext Db
+
+<h3>Students</h3>
+<p>This page uses a Syncfusion Grid placeholder. Replace with Syncfusion TagHelper/Grid component with your license key.</p>
+
+<table class="table">
+  <thead><tr><th>First</th><th>Last</th><th>Email</th><th>Actions</th></tr></thead>
+  <tbody>
+  @foreach(var s in Db.Students.Take(50)){
+    <tr>
+      <td>@s.FirstName</td>
+      <td>@s.LastName</td>
+      <td>@s.Email</td>
+      <td><a href="/students/@s.Id">View</a></td>
+    </tr>
+  }
+  </tbody>
+</table>

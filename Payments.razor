@@ -1,0 +1,20 @@
+@using Microsoft.EntityFrameworkCore
+@page "/payments"
+@using SchoolSystem.Server.Data
+@inject SchoolContext Db
+
+<h3>Payments</h3>
+<p>Payments demo. Use Stripe Checkout client integration on the client; server-side endpoint included at /api/payments/create.</p>
+<table class="table">
+  <thead><tr><th>Student</th><th>Amount</th><th>Currency</th><th>When</th></tr></thead>
+  <tbody>
+  @foreach(var p in Db.PaymentTransactions.Include(x => x.Student).OrderByDescending(x => x.CreatedAt).Take(50)){
+    <tr>
+      <td>@p.Student?.FirstName @p.Student?.LastName</td>
+      <td>@p.Amount</td>
+      <td>@p.Currency</td>
+      <td>@p.CreatedAt.ToLocalTime()</td>
+    </tr>
+  }
+  </tbody>
+</table>

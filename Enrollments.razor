@@ -1,0 +1,12 @@
+@using Microsoft.EntityFrameworkCore
+@page "/enrollments"
+@using SchoolSystem.Server.Data
+@inject SchoolContext Db
+
+<h3>Enrollments</h3>
+<p>List of recent enrollments (placeholder). Convert to a Syncfusion Grid for sorting/filtering.</p>
+<ul>
+@foreach(var e in Db.Enrollments.Include(x => x.Student).OrderByDescending(x => x.EnrolledOn).Take(50)){
+  <li>@e.Student?.FirstName @e.Student?.LastName — @e.ClassName (@e.EnrolledOn.ToLocalTime())</li>
+}
+</ul>
